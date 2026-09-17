@@ -9,3 +9,7 @@ node_modules
 public/server
 public/server.log
 errors.log
+build/
+dist-electron/
+coverage/
+*.tsbuildinfo

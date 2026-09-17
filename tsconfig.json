@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "types": ["vite/client", "vitest/globals", "node"],
+    "paths": {
+      "app/*": ["./src/app/*"],
+      "pages/*": ["./src/pages/*"],
+      "widgets/*": ["./src/widgets/*"],
+      "features/*": ["./src/features/*"],
+      "entities/*": ["./src/entities/*"],
+      "shared/*": ["./src/shared/*"]
+    }
+  },
+  "include": ["src", "vite.config.mts"]
+}

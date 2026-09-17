@@ -1,70 +1,53 @@
-# Getting Started with Create React App
+# CutOpt
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Настольный клиент расчёта раскроя: React + TypeScript + Electron.
+Интерфейс организован по Feature-Sliced Design; [описание архитектуры](docs/architecture.md).
+Сервер Python расположен в отдельном репозитории `Cutting/` внутри рабочей папки.
 
-## Available Scripts
+## Разработка
 
-In the project directory, you can run:
+```sh
+npm ci
+npm start
+```
 
-### `npm start`
+React запускается на `http://localhost:3000`. Для реальных расчётов запустите
+Python-службу на порту 8000. При необходимости задайте другой адрес через
+`REACT_APP_API_URL` в `.env.local` до запуска или сборки клиента.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+В отдельном терминале для настольного режима:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+```sh
+npm run electron:start
+```
 
-### `npm test`
+Команда сначала компилирует `electron/main.ts` в `dist-electron/main.js`.
+Если в `public/server/dist/` есть `main.exe` (Windows) или `main` (Linux/macOS),
+Electron запускает его дочерним процессом. Альтернативный путь можно задать
+переменной `CUTTING_SERVER_PATH`. В режиме разработки при отсутствии исполняемого
+файла используется отдельно запущенная служба.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Проверка и сборка
 
-### `npm run build`
+```sh
+npm run typecheck
+npm run check:fsd
+npm test -- --runInBand
+npm run build
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Результат: `build/` — веб-клиент и статические ресурсы, `dist-electron/` —
+основной процесс Electron. Генерируемые файлы не хранятся в Git.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Для Windows соберите Python-сервер по инструкции `Cutting/OPTIMIZER.md`, положите
+его в `public/server/dist/main.exe`, затем выполните:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```sh
+npm run electron:package:win
+```
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Аналогичные команды: `electron:package:linux` и `electron:package:mac`.
+Серверный исполняемый файл должен соответствовать целевой операционной системе.
+История, журнал службы и сохраняемый через меню Electron заказ располагаются
+в каталоге `app.getPath('userData')`. Старый файл `public/local_data.json`
+поддерживается как источник для первого восстановления заказа.
