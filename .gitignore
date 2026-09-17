@@ -5,6 +5,7 @@
 .idea
 *.iml
 dist
+release
 node_modules
 public/server
 public/server.log

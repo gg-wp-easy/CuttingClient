@@ -27,8 +27,14 @@ function stopServer(): void {
     } else server.kill();
     server = null;
 }
+function serverExecutablePath(): string {
+    const exeName = process.platform === 'win32' ? 'main.exe' : 'main';
+    // Packaged builds ship the app in app.asar; a spawned executable must live outside it.
+    if (app.isPackaged) return path.join(process.resourcesPath, 'app.asar.unpacked', 'build', 'server', 'dist', exeName);
+    return path.join(assets(), 'server', 'dist', exeName);
+}
 function startServer(): void {
-    const executable = process.env.CUTTING_SERVER_PATH || path.join(assets(), 'server', 'dist', process.platform === 'win32' ? 'main.exe' : 'main');
+    const executable = process.env.CUTTING_SERVER_PATH || serverExecutablePath();
     // In browser development the Python service can be started separately.
     if (!existsSync(executable) && !app.isPackaged) return;
     server = spawn(executable, [], {cwd: app.getPath('userData'), windowsHide: true});

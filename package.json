@@ -1,10 +1,11 @@
 {
   "name": "NK-CutOpt",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
-  "author": "GG WP EASY",
+  "author": "GG WP EASY <nikitakaev25@gmail.com>",
   "description": "NK-CutOpt — приложение оптимального раскроя",
   "main": "dist-electron/main.js",
+  "desktopName": "NK-CutOpt.desktop",
   "dependencies": {
     "react": "latest",
     "react-dom": "latest",
@@ -23,9 +24,9 @@
     "electron:install": "install-electron",
     "electron:start": "npm run build && electron .",
     "electron:dev": "npm run build:electron && node scripts/electron-dev.cjs",
-    "electron:package:win": "npm run build && electron-builder --win --x64",
-    "electron:package:linux": "npm run build && electron-builder --linux",
-    "electron:package:mac": "npm run build && electron-builder --mac",
+    "electron:package:win": "npm run build && node scripts/electron-package.cjs win x64",
+    "electron:package:linux": "npm run build && node scripts/electron-package.cjs linux x64",
+    "electron:package:mac": "npm run build && node scripts/electron-package.cjs mac",
     "package-npm-win": "npm run electron:package:win"
   },
   "devDependencies": {
@@ -50,8 +51,9 @@
   "build": {
     "appId": "ru.nk-tech.cutopt",
     "productName": "NK-CutOpt",
+    "publish": null,
     "directories": {
-      "output": "dist"
+      "output": "release"
     },
     "files": [
       "build/**/*",
@@ -59,19 +61,28 @@
       "package.json",
       "!node_modules/**/*"
     ],
-    "asar": false,
+    "asar": true,
+    "asarUnpack": [
+      "build/server/**/*"
+    ],
+    "artifactName": "${productName}-${buildVersion}-${arch}.${ext}",
     "win": {
       "target": ["nsis"],
       "icon": "favicon.ico"
     },
     "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "allowToChangeInstallationDirectory": true,
+      "language": "1049",
+      "installerIcon": "favicon.ico",
+      "uninstallerIcon": "favicon.ico",
+      "shortcutName": "NK-CutOpt"
     },
     "linux": {
       "target": ["AppImage"],
-      "icon": "favicon.ico",
-      "category": "Utility"
+      "icon": "favicon.png",
+      "category": "Utility",
+      "syncDesktopName": true
     },
     "mac": {
       "target": ["dmg"]

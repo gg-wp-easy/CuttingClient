@@ -47,10 +47,20 @@ npm run electron:package:win
 ```
 
 Сборка дистрибутивов выполняется через `electron-builder` (конфигурация — секция
-`build` в `package.json`): `electron:package:win` собирает NSIS-установщик,
-`electron:package:linux` — AppImage, `electron:package:mac` — dmg. Результат
-кладётся в `dist/`. Серверный исполняемый файл должен соответствовать целевой
-операционной системе.
+`build` в `package.json`, запуск — `scripts/electron-package.cjs`):
+`electron:package:win` собирает NSIS-установщик, `electron:package:linux` —
+AppImage, `electron:package:mac` — dmg. Результат кладётся в `release/` —
+файл называется `NK-CutOpt-<версия>.<номер сборки>-<arch>.<ext>`, где номер
+сборки — дата и время в формате `ГГГГММДДЧЧММ` (локальное время машины,
+на которой собирали). Серверный исполняемый файл должен соответствовать
+целевой операционной системе. Приложение упаковано в `asar` с распаковкой
+каталога `build/server` — так серверный исполняемый файл остаётся отдельным
+файлом, пригодным для запуска дочерним процессом.
+
+`electron:package:win` собирайте на Windows: electron-builder встраивает иконку
+и версию в `.exe` через `rcedit`/`signtool`, а с Linux/macOS для этого нужен Wine
+(`wine`, не входит в зависимости проекта). `electron:package:linux` и
+`electron:package:mac` не требуют Wine и собираются на своей платформе.
 История, журнал службы и сохраняемый через меню Electron заказ располагаются
 в каталоге `app.getPath('userData')`. Старый файл `public/local_data.json`
 поддерживается как источник для первого восстановления заказа.
