@@ -62,7 +62,7 @@ async function confirmExit(draft?: unknown): Promise<void> {
 function createWindow(): void {
     const window = track(new BrowserWindow({
         width: 1200, height: 900, minWidth: 680, minHeight: 600, show: false,
-        title: 'CutOpt — оптимальный раскрой', icon: path.join(assets(), 'favicon.ico'),
+        title: 'NK-CutOpt — оптимальный раскрой', icon: path.join(assets(), 'favicon.ico'),
         webPreferences: {preload: path.join(__dirname, 'preload.js'), nodeIntegration: false, contextIsolation: true},
     }));
     mainWindow = window;

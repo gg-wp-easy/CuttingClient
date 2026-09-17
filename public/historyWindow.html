@@ -1,15 +1,87 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>История раскроя</title>
+    <style>
+        :root { --ink:#192b3b; --muted:#647587; --line:#dde5ec; --accent:#087f76; }
+        * { box-sizing:border-box; }
+        body { margin:0; font-family:Inter, 'Segoe UI', sans-serif; color:var(--ink); background:#f3f6f9; -webkit-font-smoothing:antialiased; }
+        header { background:#152b3b; padding:16px 24px; color:#fff; }
+        header h1 { margin:0; font-size:18px; }
+        main { padding:20px 24px; }
+        .state { text-align:center; color:var(--muted); padding:48px 16px; }
+        table { width:100%; border-collapse:collapse; background:#fff; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+        th, td { text-align:left; padding:10px 12px; font-size:13px; border-bottom:1px solid #edf1f5; vertical-align:top; }
+        th { background:#f5f8fa; color:var(--muted); font-weight:600; font-size:12px; }
+        tbody tr:last-child td { border-bottom:0; }
+        .muted { color:var(--muted); }
+        .badge { display:inline-block; padding:2px 8px; border-radius:999px; background:#eaf3f3; color:var(--accent); font-size:11px; font-weight:600; }
+        .error { color:#9a3526; background:#fff1ee; border:1px solid #f2c4bd; border-radius:8px; padding:14px 16px; }
+    </style>
 </head>
 <body>
-    <div>
+<header><h1>История линейного раскроя</h1></header>
+<main id="root"><p class="state">Загрузка…</p></main>
+<script>
+    const API_URL = 'http://localhost:8000';
+    const root = document.getElementById('root');
 
-    </div>
-    <script text="javascript">
+    function fmtDate(iso) {
+        const date = new Date(iso);
+        return Number.isNaN(date.getTime()) ? iso : date.toLocaleString('ru-RU');
+    }
+    function stockLabel(input) {
+        if (Array.isArray(input.originals_length)) return input.originals_length.join(', ') + ' мм';
+        return input.original_length + ' мм';
+    }
+    function partsLabel(input) {
+        const lengths = input.cut_length || [];
+        const counts = input.cut_count || [];
+        return lengths.map((length, index) => `${length}×${counts[index] ?? '?'}`).join(', ');
+    }
+    function stats(entry) {
+        const maps = Array.isArray(entry.data_result) ? entry.data_result : [];
+        const stockCount = maps.length;
+        const remainder = maps.reduce((sum, row) => sum + (Number(row[row.length - 1]) || 0), 0);
+        return {stockCount, remainder};
+    }
+    function render(history) {
+        if (!history.length) {
+            root.innerHTML = '<p class="state">История пуста — здесь появятся расчёты линейного раскроя после первого запуска.</p>';
+            return;
+        }
+        const rows = history.map(entry => {
+            const input = entry.data_input || {};
+            const {stockCount, remainder} = stats(entry);
+            const multi = Array.isArray(input.originals_length);
+            return `<tr>
+                <td>${fmtDate(entry.id)}</td>
+                <td><span class="badge">${multi ? 'Несколько заготовок' : 'Одна заготовка'}</span></td>
+                <td>${stockLabel(input)}</td>
+                <td>${partsLabel(input) || '—'}</td>
+                <td>${stockCount}</td>
+                <td>${remainder.toLocaleString('ru-RU')} мм</td>
+            </tr>`;
+        }).join('');
+        root.innerHTML = `<table>
+            <thead><tr>
+                <th scope="col">Дата</th><th scope="col">Тип</th><th scope="col">Исходная длина</th>
+                <th scope="col">Детали (длина×кол-во)</th><th scope="col">Заготовок использовано</th><th scope="col">Суммарный остаток</th>
+            </tr></thead>
+            <tbody>${rows}</tbody>
+        </table>`;
+    }
 
-    </script>
+    fetch(`${API_URL}/history-cut`)
+        .then(response => {
+            if (!response.ok) throw new Error('Служба вернула ошибку.');
+            return response.json();
+        })
+        .then(history => render(Array.isArray(history) ? history : []))
+        .catch(() => {
+            root.innerHTML = '<p class="error">Служба раскроя недоступна. Проверьте, что она запущена, и откройте историю ещё раз.</p>';
+        });
+</script>
 </body>
 </html>

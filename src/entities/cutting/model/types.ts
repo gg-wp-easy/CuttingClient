@@ -44,3 +44,9 @@ export interface LinearDraft {
     stocks: StockRow[];
     rows: CutRow[];
 }
+export interface SheetDraft {
+    version: 1;
+    height: string;
+    width: string;
+    rows: SheetRow[];
+}

@@ -13,7 +13,11 @@ export function EditableTable<K extends string>({title, columns, rows, onChange}
     }
     return <section className="panel table-panel">
         <div className="section-heading"><h2>{title}</h2>
-            <button type="button" className="button secondary" onClick={addRow}>Добавить строку</button></div>
+            <div className="toolbar">
+                <button type="button" className="button secondary" onClick={addRow}>Добавить строку</button>
+                {rows.length > 0 && <button type="button" className="button secondary" onClick={() => onChange([])}>Очистить</button>}
+            </div>
+        </div>
         <div className="table-scroll"><table>
             <thead><tr><th scope="col">№</th>{columns.map(column => <th scope="col" key={column.key}>{column.label}</th>)}<th scope="col">Действия</th></tr></thead>
             <tbody>{rows.map((row, index) => <tr key={row.id}>

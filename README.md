@@ -46,8 +46,11 @@ npm run build
 npm run electron:package:win
 ```
 
-Аналогичные команды: `electron:package:linux` и `electron:package:mac`.
-Серверный исполняемый файл должен соответствовать целевой операционной системе.
+Сборка дистрибутивов выполняется через `electron-builder` (конфигурация — секция
+`build` в `package.json`): `electron:package:win` собирает NSIS-установщик,
+`electron:package:linux` — AppImage, `electron:package:mac` — dmg. Результат
+кладётся в `dist/`. Серверный исполняемый файл должен соответствовать целевой
+операционной системе.
 История, журнал службы и сохраняемый через меню Electron заказ располагаются
 в каталоге `app.getPath('userData')`. Старый файл `public/local_data.json`
 поддерживается как источник для первого восстановления заказа.

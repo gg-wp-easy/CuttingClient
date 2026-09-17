@@ -1,7 +1,7 @@
 # TypeScript и Feature-Sliced Design
 
-Клиент использует React 18, TypeScript в strict-режиме и существующую сборку
-react-scripts. Все исходники приложения и тесты в `src` — `.ts` / `.tsx`.
+Клиент использует React 19, TypeScript в strict-режиме и сборку на Vite.
+Все исходники приложения и тесты в `src` — `.ts` / `.tsx`.
 Главный процесс Electron находится в `electron/main.ts` и собирается отдельно:
 он выполняется в Node.js, поэтому не входит в FSD-слои интерфейса.
 
